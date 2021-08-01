@@ -1,0 +1,6 @@
+name: AutoStop
+version: ${project.version}
+main: me.gkasparov.autostop.AutoStop
+api-version: 1.17
+authors: [ GKasparov ]
+description: Stops the server when there's no players

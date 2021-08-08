@@ -1,16 +1,19 @@
 package me.gkasparov.autostop;
 
 import org.bukkit.Bukkit;
-import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.concurrent.TimeUnit;
-
 public final class AutoStop extends JavaPlugin implements Listener {
+
+    private long lastLeaveTime = -1;
+
+    @EventHandler
+    public void onQuit(PlayerQuitEvent event) {
+        lastLeaveTime = System.currentTimeMillis();
+    }
 
     @Override
     public void onEnable() {
@@ -19,22 +22,18 @@ public final class AutoStop extends JavaPlugin implements Listener {
 
         Bukkit.getServer().getPluginManager().registerEvents(this, this);
 
+        long timeoutMillis = getConfig().getInt("timout") * 60000L;
 
+        getServer().getScheduler().scheduleSyncRepeatingTask(this, () -> {
+            if (lastLeaveTime > 0 && System.currentTimeMillis() > lastLeaveTime + timeoutMillis) {
+                getServer().shutdown();
+            }
+        }, 0, 20);
     }
 
     @Override
     public void onDisable() {
         System.out.println("Disabling AutoStop");
     }
-
-
-
-    @EventHandler
-    public void onJoin(PlayerQuitEvent event) throws InterruptedException {
-        while (Bukkit.getOnlinePlayers().size() == 0) {
-            TimeUnit.MINUTES.sleep(getConfig().getInt("timeout"));
-            Bukkit.shutdown();
-
-        }
-    }
 }
+

@@ -22,7 +22,7 @@ public final class AutoStop extends JavaPlugin implements Listener {
 
         Bukkit.getServer().getPluginManager().registerEvents(this, this);
 
-        long timeoutMillis = getConfig().getInt("timout") * 60000L;
+        long timeoutMillis = getConfig().getInt("timout") * 60000L; // Converts config minutes to required ms
 
         getServer().getScheduler().scheduleSyncRepeatingTask(this, () -> {
             if (lastLeaveTime > 0 && System.currentTimeMillis() > lastLeaveTime + timeoutMillis) {
